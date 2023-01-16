@@ -1,5 +1,4 @@
 use pyo3::{prelude::*, types::*, PyTypeInfo};
-use rayon::prelude::*;
 
 type KeyPath = Vec<Py<PyAny>>;
 
@@ -52,8 +51,6 @@ enum Diff {
     DictItemRemoved(DictDiff),
     IterLenMismatch(IterLenMismatch)
 }
-// #[pyclass]
-// struct Diff(KeyPath, Py<PyAny>, Py<PyAny>);
 
 #[derive(Default)]
 #[pyclass] // pyclass(get_all) not available for some reason...
@@ -72,7 +69,6 @@ struct Output {
 
 #[pyfunction(name="quickdiff")]
 fn python_entrypoint(a: &PyAny, b: &PyAny) -> Output {
-    // collect results into the output structure... is this better done in Python?
     let mut output = Output::default();
 
     for d in quickdiff_dispatch(a, b, vec![]) {
@@ -93,21 +89,27 @@ fn quickdiff_dispatch<'a>(a: &'a PyAny, b: &'a PyAny, keypath: KeyPath) -> Vec<D
     if let Ok((a, b)) = downcast_both::<PyString>(a, b) {
         let (av, bv) = extract_both::<String>(a, b).unwrap();
         quickdiff_primitive(a, b, av, bv, keypath)
+
     } else if let Ok((a, b)) = downcast_both::<PyInt>(a, b) {
         let (av, bv) = extract_both::<i128>(a, b).unwrap();
         quickdiff_primitive(a, b, av, bv, keypath)
+
     } else if let Ok((a, b)) = downcast_both::<PyFloat>(a, b) {
         let (av, bv) = extract_both::<f64>(a, b).unwrap();
         quickdiff_primitive(a, b, av, bv, keypath)
+
     } else if let Ok((av, bv)) = cast_both_as::<PyMapping>(a, b) {
         quickdiff_map(av, bv, keypath)
-    // because a PyString is also a PySequence, we need to check for this first
+        
     } else if let Ok((av, bv)) = cast_both_as::<PySequence>(a, b) {
         quickdiff_iter(av.iter().unwrap(), bv.iter().unwrap(), keypath)
+
     } else if let Ok((av, bv)) = cast_both_as::<PyIterator>(a, b) {
         quickdiff_iter(av, bv, keypath)
+
     } else if a.is_none() && b.is_none() {
         vec![]
+        
     } else {
         vec![Diff::TypeAndValChange(
             TypeAndValChange(keypath, a.into(), b.into())
@@ -181,9 +183,6 @@ fn quickdiff_iter<'a>(a: &'a PyIterator, b: &'a PyIterator, keypath: KeyPath) ->
     }
 }
 
-// fn quickdiff_set(a: &'a PySet, b: &'a PySet, keypath: KeyPath) -> Vec<Diff> {
-//     vec![]
-// }
 
 fn quickdiff_primitive<'a, T: PartialEq>(a: &'a PyAny, b: &'a PyAny, av: T, bv: T, keypath: KeyPath) -> Vec<Diff> {
     if av != bv {
@@ -206,22 +205,6 @@ fn extract_both<'a, T: FromPyObject<'a>>(a: &'a PyAny, b: &'a PyAny) -> PyResult
     Ok((a.extract()?, b.extract()?))
 }
 
-
-// fn split_on<I, K, KeyFn, P>(it: I, key_fn: KeyFn) -> HashMap<K, Split<I, P>>
-//     where
-//         I: Iterator,
-//         K: PartialEq + Eq + Hash,
-//         KeyFn: FnMut(&I::Item) -> K,
-//         P: FnMut(&I::Item) -> bool
-// {
-//     let mut map = HashMap::new();
-
-//     for el in it {
-//         map.entry(key_fn(&el)).or_insert()
-//     }
-
-//     map
-// }
 
 /// A Python module implemented in Rust.
 #[pymodule]

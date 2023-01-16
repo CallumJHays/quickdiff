@@ -54,6 +54,9 @@ Run tests:
 python -m unittest discover tests
 ```
 
-## Future Work
+## Roadmap
 
-There is potential for further performance improvement down the road via parallelization and by using `pyo3-ffi` to sidestep the Python runtime.
+- [ ] support for sets (currently is treated as an iterator)
+- [ ] parallelize for improved performance (by using `pyo3-ffi` to sidestep the Python runtime)
+- [ ] attribute diff checking for python objects
+- [ ] support custom `__eq__()` implementations

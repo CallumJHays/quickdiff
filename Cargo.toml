@@ -1,0 +1,15 @@
+[package]
+name = "quickdiff"
+version = "0.1.2"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "quickdiff"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.17.3", features = ["extension-module"] }
+pyo3-ffi = { version = "0.17.3" }
+grouping_by = { version = "0.2.2" }
+rayon = { version = "1.5.1" }

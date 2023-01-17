@@ -144,11 +144,3 @@ def printreport(report: DiffReport):
 
 if __name__ == "__main__":
     unittest.main()
-
-DiffReport(
-    val_changes=[ValChange(path=[2], a=2, b=4)],
-    type_and_val_changes=[],
-    dict_items_added=[DictDiff(path=[], key=5, val=5), DictDiff(path=[], key=6, val=6)],
-    dict_items_removed=[DictDiff(path=[], key=4, val=4)],
-    iter_len_mismatch=[IterLenMismatch(path=[3], a_len=1, b_len=2)]
-)

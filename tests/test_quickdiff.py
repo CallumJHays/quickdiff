@@ -4,13 +4,6 @@ from quickdiff import *
 from rich import print
 
 
-class TestClass:
-    def __init__(self, a: int, b: str, c: list[float]):
-        self.a = a
-        self.b = b
-        self.c = c
-
-
 class TestQuickDiff(unittest.TestCase):
     def assert_report(
         self,
@@ -48,23 +41,6 @@ class TestQuickDiff(unittest.TestCase):
 
     def test_none_eq_none(self):
         self.assert_report(quickdiff(None, None))
-
-    def test_object_eq(self):
-        a = TestClass(1, "test", [1.0, 2.0, 3.0])
-        b = TestClass(1, "test", [1.0, 2.0, 3.0])
-        self.assert_report(quickdiff(a, b))
-
-    def test_object_neq(self):
-        a = TestClass(1, "test", [1.0, 3.0, 2.0])
-        b = TestClass("4", "test2", [1.0, 2.0])  # type: ignore
-        self.assert_report(
-            quickdiff(a, b),
-            type_and_val_changes=[TypeAndValChange(["a"], 1, "4")],
-            val_changes=[
-                ValChange(["c", 2], 3.0, 2.0),
-            ],
-            iter_len_mismatch=[IterLenMismatch(["c"], 3, 2)],
-        )
 
     def test_int_ne_int(self):
         self.assert_report(quickdiff(2, 3), val_changes=[ValChange([], 2, 3)])

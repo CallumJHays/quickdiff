@@ -3,7 +3,8 @@
 `quickdiff` is a python library for quickly finding nested differences between two python objects.
 
 ## Usage:
-```python 
+
+```python
 from quickdiff import *
 
 a = {1: 1, 2: 2, 3: [3], 4: 4}
@@ -45,18 +46,20 @@ pip install maturin
 ```
 
 Compile development version with:
+
 ```bash
-maturin development
+maturin develop
 ```
 
 Run tests:
+
 ```bash
 python -m unittest discover tests
 ```
 
 ## Roadmap
 
+- [ ] attribute diff checking for python objects
 - [ ] support for sets (currently is treated as an iterator)
 - [ ] parallelize for improved performance (by using `pyo3-ffi` to sidestep the Python runtime)
-- [ ] attribute diff checking for python objects
 - [ ] support custom `__eq__()` implementations
